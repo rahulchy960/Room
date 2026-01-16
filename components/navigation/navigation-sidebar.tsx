@@ -46,6 +46,10 @@ export const NavigationSidebar = async () => {
           </div>
         ))}
       </ScrollArea>
+
+      <div className="w-full px-2.5">
+        <Separator className="h-1 bg-gray-600 rounded-md w-full" />
+      </div>
       
       <div className="pb-3 mt-auto flex items-center flex-col gap-y-4">
         <ModeToggle />
