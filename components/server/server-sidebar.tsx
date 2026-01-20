@@ -43,11 +43,11 @@ export const ServerSidebar = async ({
     return redirect("/");
   }
 
-  const textChennels = server?.channels.filter((channel) => 
+  const textChannels = server?.channels.filter((channel) => 
     channel.type === ChannelType.TEXT);
-  const audioChennels = server?.channels.filter((channel) => 
+  const audioChannels = server?.channels.filter((channel) => 
     channel.type === ChannelType.AUDIO);
-  const videoChennels = server?.channels.filter((channel) => 
+  const videoChannels = server?.channels.filter((channel) => 
     channel.type === ChannelType.VIDEO);
   const members = server?.members.filter((member) => 
     member.profileId !==profile.id);
