@@ -50,8 +50,8 @@ export const ServerSearch = ({ data }: ServerSearchProps) => {
           cursor-pointer
         "
       >
-        <Search className="h-4 w-4 transition-colors duration-200 group-hover:text-primary/80" />
-        <p className="font-semibold text-sm transition-colors duration-200 group-hover:text-primary/80">
+        <Search className="h-4 w-4 transition-colors duration-200 group-hover:text-sidebar-accent-foreground" />
+        <p className="font-semibold text-sm transition-colors duration-200 group-hover:text-sidebar-accent-foreground">
           Search
         </p>
       </button>
