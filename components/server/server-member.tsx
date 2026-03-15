@@ -26,8 +26,13 @@ export const ServerMember = ({
   const router = useRouter();
 
   const icon = RoleIconMap[member.role];
+
+  const onClick = () => {
+    router.push(`/servers/${params?.serverId}/conversation/${member.id}`)
+  }
   return (
     <button
+      onClick={onClick}
       className={cn(
         "group px-2 py-2 rounded-md flex items-center gap-x-2 w-full text-left transition mb-1 hover:bg-popover hover:text-sidebar-accent-foreground",
         params?.memberId === member.id && "bg-popover/20"
