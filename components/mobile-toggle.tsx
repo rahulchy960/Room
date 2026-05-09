@@ -5,6 +5,8 @@ import { Menu } from "lucide-react"
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
+  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Button } from "./ui/button"
@@ -25,6 +27,10 @@ export const MobileToggle = ({
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="p-0 flex flex-row gap-0">
+          <SheetTitle className="sr-only">Navigation</SheetTitle>
+          <SheetDescription className="sr-only">
+            Server and channel navigation
+          </SheetDescription>
           <div className="w-18">
             <NavigationSidebar />
           </div>

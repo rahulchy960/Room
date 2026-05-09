@@ -36,29 +36,25 @@ import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 
 export const initialProfile = async () => {
-  // 1️⃣ Get session WITHOUT hitting Clerk API
+
   const { userId } = await auth();
 
-  // 2️⃣ Redirect if not signed in (App Router way)
   if (!userId) {
     redirect("/sign-in");
   }
 
-  // 3️⃣ Check DB first (avoid unnecessary Clerk call)
-  const profile = await prisma.profile.findUnique({
+  const profile = await prisma.profile.findFirst({
     where: { userId }
   });
 
   if (profile) return profile;
 
-  // 4️⃣ Only NOW call Clerk (runs once per new user)
   const user = await currentUser();
 
   if (!user) {
     redirect("/sign-in");
   }
 
-  // 5️⃣ Create profile
   const newProfile = await prisma.profile.create({
     data: {
       userId: user.id,

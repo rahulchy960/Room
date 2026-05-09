@@ -33,14 +33,7 @@ export const ServerSection = ({
         <ActionTooltip label="Create Chennel" side="top">
           <button
           onClick={() => onOpen("createChannel", { channelType })}
-          className="
-            p-1
-            rounded-md
-            text-muted-foreground
-            transition-colors duration-200
-            hover:bg-sidebar-accent
-            hover:text-sidebar-accent-foreground
-          "
+          className="p-1 rounded-md text-muted-foreground transition-colors duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
           >
             <Plus className="h-4 w-4 transition-colors duration-200" />
           </button>
@@ -50,14 +43,7 @@ export const ServerSection = ({
         <ActionTooltip label="Create Chennel" side="top">
           <button
           onClick={() => onOpen("members", { server })}
-          className="
-            p-1
-            rounded-md
-            text-muted-foreground
-            transition-colors duration-200
-            hover:bg-sidebar-accent
-            hover:text-sidebar-accent-foreground
-          "
+          className="p-1 rounded-md text-muted-foreground transition-colors duration-200 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
           >
             <Settings className="h-4 w-4 transition-colors duration-200" />
           </button>
