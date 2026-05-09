@@ -27,9 +27,7 @@ export const NavigationSidebar = async () => {
   })
   
   return (
-    <div className="space-y-4 flex flex-col items-center
-      h-full w-full bg-sidebar text-sidebar-foreground py-3"
-    >
+    <div className="space-y-4 flex flex-col items-center h-full w-full bg-sidebar text-sidebar-foreground py-3">
       <NavigationAction />
       <div className="w-full px-2.5">
         <Separator className="h-1 bg-gray-600 rounded-md w-full" />
@@ -53,14 +51,7 @@ export const NavigationSidebar = async () => {
       
       <div className="pb-3 mt-auto flex items-center flex-col gap-y-4">
         <ModeToggle />
-        <div className="
-          h-10 w-10
-          rounded-3xl
-          bg-linear-to-br from-indigo-500 via-purple-700 to-violet-500
-          p-0.5
-          transition-all duration-200
-          hover:rounded-xl
-        ">
+        <div className="h-10 w-10 rounded-3xl bg-linear-to-br from-indigo-500 via-purple-700 to-violet-500 p-0.5 transition-all duration-200 hover:rounded-xl">
           <div className="h-full w-full rounded-3xl bg-sidebar flex items-center justify-center">
             <UserButton />
           </div>

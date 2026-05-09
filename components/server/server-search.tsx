@@ -39,16 +39,7 @@ export const ServerSearch = ({ data }: ServerSearchProps) => {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="
-          group
-          px-2 py-2
-          rounded-md
-          flex items-center gap-x-2 w-full
-          bg-sidebar
-          transition-colors duration-200
-          hover:bg-sidebar/70
-          cursor-pointer
-        "
+        className="group px-2 py-2 rounded-md flex items-center gap-x-2 w-full bg-sidebar transition-colors duration-200 hover:bg-sidebar/70 cursor-pointer"
       >
         <Search className="h-4 w-4 transition-colors duration-200 group-hover:text-sidebar-accent-foreground" />
         <p className="font-semibold text-sm transition-colors duration-200 group-hover:text-sidebar-accent-foreground">
