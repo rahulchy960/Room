@@ -37,7 +37,7 @@ export const useChatSocket = ({
 
     const cacheKey = [queryKey, paramValue];
 
-    socket.on(updateKey, (message: MessageWithMemberWithProfile) => {
+    const handleUpdate = (message: MessageWithMemberWithProfile) => {
       queryClient.setQueryData<InfiniteData>(cacheKey, (oldData) => {
         if (!oldData?.pages?.length) return oldData;
 
@@ -51,9 +51,9 @@ export const useChatSocket = ({
           })),
         };
       });
-    });
+    };
 
-    socket.on(addKey, (message: MessageWithMemberWithProfile) => {
+    const handleAdd = (message: MessageWithMemberWithProfile) => {
       queryClient.setQueryData<InfiniteData>(cacheKey, (oldData) => {
         if (!oldData?.pages?.length) {
           return {
@@ -61,6 +61,11 @@ export const useChatSocket = ({
             pageParams: [undefined],
           };
         }
+
+        const alreadyExists = oldData.pages.some((page) =>
+          page.items.some((item) => item.id === message.id),
+        );
+        if (alreadyExists) return oldData;
 
         const [first, ...rest] = oldData.pages;
         return {
@@ -71,11 +76,20 @@ export const useChatSocket = ({
           ],
         };
       });
-    });
+    };
+
+    const handleReconnect = () => {
+      queryClient.invalidateQueries({ queryKey: cacheKey });
+    };
+
+    socket.on(updateKey, handleUpdate);
+    socket.on(addKey, handleAdd);
+    socket.io.on("reconnect", handleReconnect);
 
     return () => {
-      socket.off(addKey);
-      socket.off(updateKey);
+      socket.off(addKey, handleAdd);
+      socket.off(updateKey, handleUpdate);
+      socket.io.off("reconnect", handleReconnect);
     };
   }, [socket, queryClient, addKey, updateKey, queryKey, paramValue]);
 };
