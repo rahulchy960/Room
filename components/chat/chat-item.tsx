@@ -1,6 +1,12 @@
 "use client";
 
+import * as z from "zod";
+import axios from "axios";
+import qs from "query-string";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Member, Profile } from "@/lib/generated/prisma/browser";
 import { MemberRole } from "@/lib/generated/prisma/enums";
 import {
@@ -15,6 +21,10 @@ import {
 
 import { UserAvatar } from "../user-avatar";
 import { ActionTooltip } from "../action-tooltip";
+import { Form, FormControl, FormField, FormItem } from "../ui/form";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { useModal } from "@/hooks/use-modal-store";
 
 interface ChatItemProps {
   id: string;
@@ -45,6 +55,10 @@ const isPdfUrl = (url: string) => {
   return /\.pdf$/i.test(url.split("?")[0]);
 };
 
+const formSchema = z.object({
+  content: z.string().min(1),
+});
+
 export const ChatItem = ({
   id,
   content,
@@ -57,6 +71,9 @@ export const ChatItem = ({
   socketUrl,
   socketQuery,
 }: ChatItemProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const { onOpen } = useModal();
+
   const isAdmin = currentMember.role === MemberRole.ADMIN;
   const isModerator = currentMember.role === MemberRole.MODERATOR;
   const isOwner = currentMember.id === member.id;
@@ -67,19 +84,50 @@ export const ChatItem = ({
   const isPDF = !!fileUrl && isPdfUrl(fileUrl);
   const isImage = !!fileUrl && isImageUrl(fileUrl);
 
-  const onEdit = () => {
-    console.log("Edit message:", {
-      id,
-      socketUrl,
-      socketQuery,
-    });
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      content: content,
+    },
+  });
+
+  const isLoading = form.formState.isSubmitting;
+
+  useEffect(() => {
+    form.reset({ content });
+  }, [content, form]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsEditing(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const url = qs.stringifyUrl({
+        url: `${socketUrl}/${id}`,
+        query: socketQuery,
+      });
+
+      await axios.patch(url, values);
+
+      form.reset({ content: values.content });
+      setIsEditing(false);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const onDelete = () => {
-    console.log("Delete message:", {
-      id,
-      socketUrl,
-      socketQuery,
+    onOpen("deleteMessage", {
+      apiUrl: `${socketUrl}/${id}`,
+      query: socketQuery,
     });
   };
 
@@ -149,7 +197,7 @@ export const ChatItem = ({
             </a>
           )}
 
-          {!fileUrl && !deleted && (
+          {!fileUrl && !deleted && !isEditing && (
             <p className="text-sm text-zinc-600 dark:text-zinc-300">
               {content}
 
@@ -161,6 +209,40 @@ export const ChatItem = ({
             </p>
           )}
 
+          {!fileUrl && isEditing && (
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="flex w-full items-center gap-x-2 pt-2"
+              >
+                <FormField
+                  control={form.control}
+                  name="content"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormControl>
+                        <div className="relative w-full">
+                          <Input
+                            disabled={isLoading}
+                            className="bg-muted/50 border-0 focus-visible:ring-0 text-foreground focus-visible:ring-offset-0"
+                            placeholder="Edited message"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <Button disabled={isLoading} size="sm">
+                  Save
+                </Button>
+              </form>
+              <span className="mt-1 text-[10px] text-muted-foreground">
+                Press escape to cancel, enter to save
+              </span>
+            </Form>
+          )}
+
           {deleted && (
             <p className="mt-1 text-sm italic text-muted-foreground">
               This message has been deleted.
@@ -169,13 +251,13 @@ export const ChatItem = ({
         </div>
       </div>
 
-      {(canEditMessage || canDeleteMessage) && (
+      {!deleted && (canEditMessage || canDeleteMessage) && (
         <div className="absolute right-5 top-5 hidden items-center gap-x-2 rounded-sm border bg-background p-1 group-hover:flex">
           {canEditMessage && (
             <ActionTooltip label="Edit">
               <button
                 type="button"
-                onClick={onEdit}
+                onClick={() => setIsEditing(true)}
                 className="text-muted-foreground transition hover:text-foreground"
               >
                 <Edit className="h-4 w-4" />
