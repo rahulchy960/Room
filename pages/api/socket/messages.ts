@@ -29,8 +29,8 @@ export default async function handler(
       return res.status(400).json({ error: "Channel Id Missing" });
     }
 
-    if(!content) {
-      return res.status(400).json({ error: "Content Missing" });
+    if(!content && !fileUrl) {
+      return res.status(400).json({ error: "Content or file is required" });
     }
 
     const server = await prisma.server.findFirst({

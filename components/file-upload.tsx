@@ -1,9 +1,10 @@
-"use client"
+"use client";
 
 import { UploadDropzone } from "@/lib/uploadthing";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { FileIcon, X } from "lucide-react";
 
 interface FileUploadProps {
   onChange: (url?: string) => void;
@@ -18,85 +19,89 @@ export const FileUpload = ({
   value,
   endpoint,
   disabled,
-  className
+  className,
 }: FileUploadProps) => {
   const hasValue = Boolean(value);
-  const getFileName = (url: string) => {
-    const lastSegment = url.split("/").pop() ?? "file";
-    const name = lastSegment.split("?")[0];
-    try {
-      return decodeURIComponent(name);
-    } catch {
-      return name;
-    }
-  };
-  const fileName = value ? getFileName(value) : "";
-  const isImage = !!value && endpoint === "serverImage";
 
+  const getFileExtension = (url: string) => {
+    const cleanUrl = url.split("?")[0];
+    return cleanUrl.split(".").pop()?.toLowerCase() ?? "";
+  };
+
+  const fileExtension = value ? getFileExtension(value) : "";
+
+  const isImage =
+    !!value &&
+    ["jpg", "jpeg", "png", "webp", "gif"].includes(fileExtension);
+
+  const isPdf = !!value && fileExtension === "pdf";
 
   const labelText = hasValue
     ? "Drop a new file or click to replace"
     : "Drop a file here or click to upload";
+
   const allowedText =
     endpoint === "serverImage"
       ? "PNG, JPG, or WEBP up to 2MB."
       : "Images or PDF.";
 
   return (
-    <div className={cn("w-full space-y-3", className)}>
-
-      {/* 1️⃣ IMAGE PREVIEW */}
+    <div className={cn("w-full min-w-0 space-y-3", className)}>
       {value && isImage && (
-        <div className="group relative mx-auto h-32 w-32 overflow-hidden rounded-full border border-border bg-background">
+        <div className="relative mx-auto h-40 w-40 overflow-hidden rounded-md border border-border bg-background">
           <Image
             src={value}
             alt="Uploaded image preview"
             fill
-            sizes="128px"
+            sizes="160px"
             className="object-cover"
           />
 
-          {/* Hover Overlay */}
-          <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition group-hover:opacity-100">
-            <button
-              type="button"
-              onClick={() => onChange("")}
-              disabled={disabled}
-              className="rounded-md bg-background/90 px-3 py-1 text-xs font-medium text-foreground shadow hover:bg-background"
-            >
-              Remove
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            disabled={disabled}
+            className="absolute right-2 top-2 rounded-full bg-background/90 p-1 text-foreground shadow hover:bg-background"
+          >
+            <X className="h-4 w-4" />
+          </button>
         </div>
       )}
 
-      {/* 2️⃣ NON-IMAGE FILE PREVIEW */}
       {value && !isImage && (
-        <div className="flex items-center gap-3 rounded-lg border border-border bg-muted/40 p-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-md border border-border bg-background text-xs font-semibold uppercase text-muted-foreground">
-            File
+        <div className="flex w-full min-w-0 items-center gap-3 rounded-lg border border-border bg-muted/40 p-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-border bg-background">
+            <FileIcon className="h-6 w-6 text-muted-foreground" />
           </div>
+
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium text-foreground">
-              {fileName}
+              {isPdf ? "PDF attached" : "File attached"}
             </p>
-            <p className="text-xs text-muted-foreground">
-              Attached file
-            </p>
+
+            <a
+              href={value}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-primary underline"
+            >
+              View attachment
+            </a>
           </div>
+
           <Button
             type="button"
-            variant="ghost"
+            variant="destructive"
             size="sm"
             onClick={() => onChange("")}
             disabled={disabled}
+            className="shrink-0"
           >
             Remove
           </Button>
         </div>
       )}
 
-      {/* 3️⃣ UPLOAD ZONE (only when no file exists) */}
       {!value && (
         <UploadDropzone
           endpoint={endpoint}
@@ -127,5 +132,5 @@ export const FileUpload = ({
         />
       )}
     </div>
-);
-}
+  );
+};

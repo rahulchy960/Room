@@ -9,6 +9,7 @@ import qs from "query-string";
 
 import { Form, FormControl, FormField, FormItem } from "../ui/form";
 import { Input } from "../ui/input";
+import { useModal } from "@/hooks/use-modal-store";
 
 interface ChatInputProps {
   apiUrl: string;
@@ -27,6 +28,9 @@ export const ChatInput = ({
   name,
   type,
 }: ChatInputProps) => {
+
+  const { onOpen } = useModal();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -61,7 +65,7 @@ export const ChatInput = ({
                 <div className="relative p-4 pb-6">
                   <button
                     type="button"
-                    onClick={() => {}}
+                    onClick={() => onOpen("messageFile", { apiUrl, query })}
                     className="absolute top-7 left-8 flex h-6 w-6 items-center justify-center rounded-full bg-muted-foreground p-1 transition hover:bg-muted-foreground/70"
                   >
                     <Plus className="h-4 w-4" />
