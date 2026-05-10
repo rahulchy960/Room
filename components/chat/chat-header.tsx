@@ -1,5 +1,7 @@
 import { AtSign } from "lucide-react";
 import { MobileToggle } from "../mobile-toggle";
+import { UserAvatar } from "../user-avatar";
+import { SocketIndicator } from "../socket-indicator";
 
 interface ChatHeaderProps {
   serverId: string;
@@ -18,14 +20,23 @@ export const ChatHeader = ({
     <div className="text-md font-semibold px-3 flex items-center h-12
     border-sidebar border-b-2">
       <MobileToggle serverId={serverId} />
-      {/* {type === "channel" && (
+      {type === "channel" && (
         <AtSign
           className="w-5 h-5 mr-2"
         />
-      )} */}
+      )}
+      {type === 'conversation' && (
+        <UserAvatar 
+          src={imageUrl}
+          className="h-8 w-8 md:h-8 md:w-8 mr-2"
+        />
+      )}
       <p className="font-semibold text-md ">
         {name}
       </p>
+      <div className="ml-auto flex items-center">
+        <SocketIndicator />
+      </div>
     </div>
   )
 }
