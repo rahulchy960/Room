@@ -4,6 +4,7 @@ import qs from "query-string";
 import { useInfiniteQuery } from "@tanstack/react-query";
 
 import { useSocket } from "@/components/providers/socket-provider";
+import { Member, Message, Profile } from "@/lib/generated/prisma/browser";
 
 interface ChatQueryProps {
   queryKey: string;
@@ -12,14 +13,14 @@ interface ChatQueryProps {
   paramValue: string;
 }
 
-type ChatMessage = {
-  id: string;
-  content: string;
-  fileUrl?: string | null;
+export type MessageWithMemberWithProfile = Message & {
+  member: Member & {
+    profile: Profile;
+  };
 };
 
 type ChatMessagePage = {
-  items: ChatMessage[];
+  items: MessageWithMemberWithProfile[];
   nextCursor: string | null;
 };
 

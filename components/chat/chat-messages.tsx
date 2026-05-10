@@ -1,18 +1,21 @@
 "use client";
 
 import { Fragment } from "react";
-import Image from "next/image";
-import { Member, Message, Profile } from "@/lib/generated/prisma/client";
-import { FileIcon, Loader2, ServerCrash } from "lucide-react";
+import { Member, Message, Profile } from "@/lib/generated/prisma/browser";
+import { Loader2, ServerCrash } from "lucide-react";
+import { format } from "date-fns";
 
 import { ChatWelcome } from "./chat-welcome";
 import { useChatQuery } from "@/hooks/use-chat-query";
+import { ChatItem } from "./chat-item";
 
-type MessageWithMemberWithProfile = Message & {
-  member: Member & {
-    profile: Profile
-  }
-}
+const DATE_FORMAT = "d MMM yyyy, HH:mm";
+
+// type MessageWithMemberWithProfile = Message & {
+//   member: Member & {
+//     profile: Profile
+//   }
+// }
 
 const isImageUrl = (url: string) => /\.(png|jpe?g|gif|webp|svg|avif)$/i.test(url.split("?")[0]);
 const isPdfUrl = (url: string) => /\.pdf$/i.test(url.split("?")[0]);
@@ -31,8 +34,11 @@ interface ChatMessagesProps {
 
 export const ChatMessages = ({
   name,
+  member,
   chatId,
   apiUrl,
+  socketUrl,
+  socketQuery,
   paramKey,
   paramValue,
   type,
@@ -97,48 +103,20 @@ export const ChatMessages = ({
         {data?.pages?.map((group, i) => (
           <Fragment key={i}>
             {group.items.map((message) => (
-              <div key={message.id} className="px-4 py-2 space-y-2">
-                {message.fileUrl && isImageUrl(message.fileUrl) && (
-                  <a
-                    href={message.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="relative block aspect-square h-48 w-48 overflow-hidden rounded-md border bg-secondary"
-                  >
-                    <Image
-                      src={message.fileUrl}
-                      alt={message.content || "Attached image"}
-                      fill
-                      sizes="192px"
-                      className="object-cover"
-                    />
-                  </a>
-                )}
-                {message.fileUrl && isPdfUrl(message.fileUrl) && (
-                  <div className="relative flex items-center rounded-md bg-background/10 p-2">
-                    <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
-                    <a
-                      href={message.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="ml-2 text-sm text-indigo-500 hover:underline dark:text-indigo-400"
-                    >
-                      PDF File
-                    </a>
-                  </div>
-                )}
-                {message.fileUrl && !isImageUrl(message.fileUrl) && !isPdfUrl(message.fileUrl) && (
-                  <a
-                    href={message.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-indigo-500 hover:underline dark:text-indigo-400"
-                  >
-                    Open attachment
-                  </a>
-                )}
-                {message.content && <p className="text-sm">{message.content}</p>}
-              </div>
+              <ChatItem 
+                key={message.id}
+                id={message.id}
+                currentMember={member}
+                member={message.member}
+                content={message.content}
+                fileUrl={message.fileUrl}
+                deleted={message.deleted}
+                timestamp={format(new Date(message.createdAt), DATE_FORMAT)}
+                isUpdated={message.updatedAt !== message.createdAt}
+                socketUrl={socketUrl}
+                socketQuery={socketQuery}
+
+              />
             ))}
           </Fragment>
         ))}
