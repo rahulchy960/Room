@@ -28,17 +28,14 @@ export const ServerHeader = ({
         asChild
       >
         <button
-          className="w-full text-md font-semibold px-3 h-12
-          flex items-center border-sidebar-border border-b-2
-          hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition"
+          className="w-full text-md font-semibold px-3 h-12 flex items-center border-sidebar-border border-b-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition"
         >
           {server.name}
           <ChevronDown className="h-5 w-5 ml-auto" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="w-56 text-xs font-medium space-y-0.5
-        text-card-foreground"
+        className="w-56 text-xs font-medium space-y-0.5 text-card-foreground"
       >
         {isModerator && (
           <DropdownMenuItem
